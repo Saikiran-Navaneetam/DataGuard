@@ -1,0 +1,94 @@
+
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Overview Dashboard{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Header -->
+<header>
+    <div>
+        <h1>Overview Dashboard</h1>
+        <p>Monitor your data pipelines and quality operations.</p>
+    </div>
+
+    <span class="system-status">● SYSTEM ONLINE</span>
+</header>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<!-- Welcome Section -->
+<section class="welcome">
+    <h2>Welcome to DataGuard</h2>
+    <p>
+        Intelligent Data Quality, Quarantine
+        and Recovery Platform.
+    </p>
+</section>
+
+<!-- Dashboard Metrics -->
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Total Records</p>
+        <h2>{{ metrics.total_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Published Records</p>
+        <h2>{{ metrics.published_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Quarantined Records</p>
+        <h2>{{ metrics.quarantined_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Successful Replays</p>
+        <h2>{{ metrics.successful_replays }}</h2>
+    </div>
+
+</section>
+
+<!-- File Upload Section -->
+<section class="upload-section" id="upload">
+
+    <h2>Start Processing</h2>
+    <p>Upload your dataset to begin data validation.</p>
+
+    <form class="upload-box"
+          action="{{ url_for('upload_file') }}"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <h3>Upload your dataset</h3>
+
+        <p>Supported formats: CSV and JSON and Excel (.xlsx)</p>
+
+        <input
+            type="file"
+            id="dataset"
+            name="dataset"
+            accept=".csv,.json,.xlsx"
+            required
+        >
+
+        <button type="submit">
+            Upload & Process
+        </button>
+
+    </form>
+
+</section>
+
+{% endblock %}

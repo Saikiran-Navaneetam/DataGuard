@@ -1,0 +1,66 @@
+# ==============================
+# Python Environment
+# ==============================
+venv/
+.venv/
+env/
+
+# ==============================
+# Python Cache Files
+# ==============================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ==============================
+# Pytest
+# ==============================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ==============================
+# Environment Variables / Secrets
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# SQLite Database Files
+# ==============================
+database/*.db
+database/*.db-journal
+database/*.db-wal
+database/*.db-shm
+
+# ==============================
+# Uploaded and Generated Data
+# ==============================
+data/uploads/*
+!data/uploads/.gitkeep
+
+data/outputs/*
+!data/outputs/.gitkeep
+
+# ==============================
+# Generated Reports
+# ==============================
+*.pdf
+*.xlsx
+*.log
+
+# ==============================
+# IDE and Editor Files
+# ==============================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ==============================
+# Operating System Files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini

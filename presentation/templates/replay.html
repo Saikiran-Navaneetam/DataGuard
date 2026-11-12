@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Replay Management{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Replay Management</h1>
+        <p>Monitor corrected records and controlled replay operations.</p>
+    </div>
+    <span class="system-status">● RECOVERY MONITORING</span>
+</header>
+
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Total Replay Attempts</p>
+        <h2>{{ summary.total }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Successful Replays</p>
+        <h2>{{ summary.success }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Failed Replays</p>
+        <h2>{{ summary.failed }}</h2>
+    </div>
+
+</section>
+
+<section class="upload-section">
+    <h2>Replay Execution History</h2>
+    <p>Review every recorded replay attempt.</p>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Replay Status</th>
+                    <th>Attempt</th>
+                    <th>Attempted At</th>
+                    <th>Replay ID</th>
+                    <th>Error Details</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ item.employee_id }}</td>
+
+                    <td>
+                        <span class="status-label {{ item.status|lower }}">
+                            {{ item.status }}
+                        </span>
+                    </td>
+
+                    <td>{{ item.attempt_number }}</td>
+                    <td>{{ item.attempted_at }}</td>
+
+                    <td title="{{ item.replay_id }}">
+                        {{ item.replay_id[:8] }}...
+                    </td>
+
+                    <td>{{ item.error_message or '-' }}</td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="6">
+                        No replay attempts have been recorded yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</section>
+
+<section class="upload-section">
+    <h2>Replay Process Overview</h2>
+    <p>
+        DataGuard revalidates corrected records before publishing them.
+        Failed attempts remain recorded for investigation and another
+        controlled retry.
+    </p>
+</section>
+
+{% endblock %}

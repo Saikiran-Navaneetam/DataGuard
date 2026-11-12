@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Data Quality{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Data Quality</h1>
+        <p>Monitor validation results and data quality across your datasets.</p>
+    </div>
+    <span class="system-status">● QUALITY MONITORING</span>
+</header>
+
+<!-- Quality Metrics -->
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Records Evaluated</p>
+        <h2>{{ quality.total_evaluated }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Valid Records</p>
+        <h2>{{ quality.valid_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Invalid Records</p>
+        <h2>{{ quality.invalid_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Validation Pass Rate</p>
+        <h2>{{ quality.pass_rate }}%</h2>
+    </div>
+
+</section>
+
+<!-- Validation Summary -->
+<section class="upload-section">
+    <h2>Validation Summary</h2>
+    <p>Distribution of records evaluated by the validation engine.</p>
+
+    <div class="quality-progress">
+        <div class="quality-progress-valid"
+             style="width: {{ quality.pass_rate }}%">
+        </div>
+    </div>
+
+    <p class="quality-description">
+        {{ quality.valid_records }} valid records out of
+        {{ quality.total_evaluated }} evaluated records.
+    </p>
+</section>
+
+<!-- Error Categories -->
+<section class="upload-section">
+    <h2>Validation Error Categories</h2>
+    <p>Most common issues detected during validation.</p>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Error Code</th>
+                    <th>Error Description</th>
+                    <th>Occurrences</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for error in quality.error_categories %}
+                <tr>
+                    <td>{{ error.code }}</td>
+                    <td>{{ error.message }}</td>
+                    <td>{{ error.count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3">No validation errors found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Record-Level Results -->
+<section class="upload-section">
+    <h2>Record-Level Validation Results</h2>
+    <p>Review individual records and their validation status.</p>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Record ID</th>
+                    <th>Row Number</th>
+                    <th>Record Key</th>
+                    <th>Status</th>
+                    <th>Error Details</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for record in quality.records %}
+                <tr>
+                    <td title="{{ record.source_record_id }}">
+                        {{ record.source_record_id[:8] }}...
+                    </td>
+                    <td>{{ record.source_row_number }}</td>
+                    <td>{{ record.record_key }}</td>
+                    <td>
+                        <span class="status-label {{ record.status|lower }}">
+                            {{ record.status }}
+                        </span>
+                    </td>
+                    <td>{{ record.error_summary or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No validation results available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

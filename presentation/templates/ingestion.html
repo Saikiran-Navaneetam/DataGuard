@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Data Ingestion{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Data Ingestion</h1>
+        <p>Uploaded CSV, JSON and Excel files registered in DataGuard.</p>
+    </div>
+    <span class="system-status">● SYSTEM ONLINE</span>
+</header>
+
+<section class="metrics">
+    <div class="metric-card">
+        <p>Total Uploaded Files</p>
+        <h2>{{ files|length }}</h2>
+    </div>
+</section>
+
+<section class="upload-section">
+    <h2>Uploaded File History</h2>
+    <p>Source files registered in the DataGuard database.</p>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Format</th>
+                    <th>File Size</th>
+                    <th>Uploaded At</th>
+                    <th>Pipeline ID</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for file in files %}
+                <tr>
+                    <td>{{ file.file_name }}</td>
+                    <td>{{ file.file_format }}</td>
+                    <td>{{ "%.2f"|format(file.file_size_bytes / 1024) }} KB</td>
+                    <td>{{ file.uploaded_at }}</td>
+                    <td title="{{ file.run_id }}">
+                        {{ file.run_id[:8] }}...
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No uploaded files found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

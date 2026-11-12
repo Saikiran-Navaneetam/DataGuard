@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}DataGuard{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <aside class="sidebar">
+        <h2>DataGuard<span>.</span></h2>
+        <p class="subtitle">DATA ENGINEERING PLATFORM</p>
+
+        <nav>
+            <a class="{% if active_page == 'overview' %}active{% endif %}"
+               href="{{ url_for('index') }}">Overview</a>
+
+            <a class="{% if active_page == 'ingestion' %}active{% endif %}"
+               href="{{ url_for('ingestion_page') }}">Data Ingestion</a>
+
+            <a class="{% if active_page == 'monitoring' %}active{% endif %}"
+               href="{{ url_for('monitoring_page') }}">Pipeline Monitor</a>
+
+            <a class="{% if active_page == 'quality' %}active{% endif %}"
+                href="{{ url_for('quality_page') }}">Data Quality</a>
+           <a class="{% if active_page == 'quarantine' %}active{% endif %}"
+                href="{{ url_for('quarantine_page') }}">Quarantine Center</a>
+            <a class="{% if active_page == 'replay' %}active{% endif %}"
+                href="{{ url_for('replay_page') }}">Replay Management</a>
+            <a class="{% if active_page == 'reports' %}active{% endif %}"
+                href="{{ url_for('reports_page') }}">Reports</a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+</body>
+</html>

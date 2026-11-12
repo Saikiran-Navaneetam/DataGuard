@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Pipeline Monitor{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Pipeline Monitor</h1>
+        <p>Track pipeline execution and processing performance.</p>
+    </div>
+    <span class="system-status">● SYSTEM ONLINE</span>
+</header>
+
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Total Pipeline Runs</p>
+        <h2>{{ report.total_runs }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Total Input Records</p>
+        <h2>{{ report.total_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Successful Replays</p>
+        <h2>{{ report.replay_success }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Failed Replays</p>
+        <h2>{{ report.replay_failed }}</h2>
+    </div>
+
+</section>
+
+<section class="upload-section">
+    <h2>Pipeline Execution History</h2>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Pipeline ID</th>
+                    <th>Status</th>
+                    <th>Started At</th>
+                    <th>Completed At</th>
+                    <th>Input Records</th>
+                    <th>Published</th>
+                    <th>Quarantined</th>
+                    <th>Replayed</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for run in report.runs %}
+                <tr>
+                    <td title="{{ run.run_id }}">
+                        {{ run.run_id[:8] }}...
+                    </td>
+                    <td>
+                        <span class="status-label {{ run.status|lower }}">
+                            {{ run.status }}
+                        </span>
+                    </td>
+                    <td>{{ run.started_at or '-' }}</td>
+                    <td>{{ run.completed_at or '-' }}</td>
+                    <td>{{ run.input_count or 0 }}</td>
+                    <td>{{ run.published_count }}</td>
+                    <td>{{ run.quarantined_count }}</td>
+                    <td>{{ run.replayed_count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8">No pipeline runs found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

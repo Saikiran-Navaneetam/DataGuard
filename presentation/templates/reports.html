@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Reports{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Reports & Analytics</h1>
+        <p>Review pipeline performance, data quality and recovery operations.</p>
+    </div>
+    <span class="system-status">● REPORTING CENTER</span>
+</header>
+
+<!-- Export Actions -->
+<section class="report-actions">
+    <div>
+        <h2>DataGuard Reports</h2>
+        <p>Generate and export your latest operational summary.</p>
+    </div>
+
+    <div class="report-buttons">
+        <a href="{{ url_for('export_report_csv') }}" class="report-button">
+            Download CSV
+        </a>
+
+        <button type="button" class="report-button"
+                onclick="window.print()">
+            Print / Save PDF
+        </button>
+    </div>
+</section>
+
+<!-- Main Metrics -->
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Total Pipeline Runs</p>
+        <h2>{{ report.total_runs }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Total Input Records</p>
+        <h2>{{ report.total_records }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Published Records</p>
+        <h2>{{ report.published }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Quarantined Records</p>
+        <h2>{{ report.quarantined }}</h2>
+    </div>
+
+</section>
+
+<!-- Replay Statistics -->
+<section class="upload-section">
+    <h2>Recovery Summary</h2>
+
+    <section class="metrics">
+
+        <div class="metric-card">
+            <p>Successful Replays</p>
+            <h2>{{ report.replay_success }}</h2>
+        </div>
+
+        <div class="metric-card">
+            <p>Failed Replays</p>
+            <h2>{{ report.replay_failed }}</h2>
+        </div>
+
+        <div class="metric-card">
+            <p>Resolved Quarantine</p>
+            <h2>{{ report.resolved_quarantine }}</h2>
+        </div>
+
+        <div class="metric-card">
+            <p>Open Quarantine</p>
+            <h2>{{ report.open_quarantine }}</h2>
+        </div>
+
+    </section>
+</section>
+
+<!-- Reconciliation -->
+<section class="upload-section">
+    <h2>Data Reconciliation</h2>
+    <p>Compare source records with successfully published target records.</p>
+
+    <div class="reconciliation-grid">
+
+        <div>
+            <span>Published Source Records</span>
+            <h2>{{ report.published }}</h2>
+        </div>
+
+        <div>
+            <span>Target Records</span>
+            <h2>{{ report.target_count }}</h2>
+        </div>
+
+        <div>
+            <span>Reconciliation Gap</span>
+            <h2>{{ report.publication_gap }}</h2>
+        </div>
+
+    </div>
+
+    {% if report.publication_gap == 0 %}
+        <p class="reconciliation-status matched">
+            Reconciliation matched — published source and target counts are equal.
+        </p>
+    {% else %}
+        <p class="reconciliation-status unmatched">
+            Reconciliation difference detected — investigate the source and target counts.
+        </p>
+    {% endif %}
+</section>
+
+<!-- Pipeline History -->
+<section class="upload-section">
+    <h2>Pipeline Execution Report</h2>
+    <p>Detailed history of pipeline executions.</p>
+
+    <div style="overflow-x:auto; margin-top:20px;">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Pipeline ID</th>
+                    <th>Status</th>
+                    <th>Started At</th>
+                    <th>Input</th>
+                    <th>Published</th>
+                    <th>Quarantined</th>
+                    <th>Replayed</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for run in report.runs %}
+                <tr>
+                    <td title="{{ run.run_id }}">
+                        {{ run.run_id[:8] }}...
+                    </td>
+                    <td>
+                        <span class="status-label {{ run.status|lower }}">
+                            {{ run.status }}
+                        </span>
+                    </td>
+                    <td>{{ run.started_at or '-' }}</td>
+                    <td>{{ run.input_count or 0 }}</td>
+                    <td>{{ run.published_count }}</td>
+                    <td>{{ run.quarantined_count }}</td>
+                    <td>{{ run.replayed_count }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7">No pipeline execution records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<p class="report-footer">
+    DataGuard | Intelligent Data Quality, Quarantine & Recovery Platform
+</p>
+
+{% endblock %}

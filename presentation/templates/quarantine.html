@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}DataGuard | Quarantine Center{% endblock %}
+
+{% block content %}
+
+<header>
+    <div>
+        <h1>Quarantine Center</h1>
+        <p>Inspect invalid records, correct errors and recover data.</p>
+    </div>
+    <span class="system-status">● RECOVERY CENTER</span>
+</header>
+
+<section class="metrics">
+
+    <div class="metric-card">
+        <p>Open Records</p>
+        <h2>{{ summary.open }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Corrected Records</p>
+        <h2>{{ summary.corrected }}</h2>
+    </div>
+
+    <div class="metric-card">
+        <p>Resolved Records</p>
+        <h2>{{ summary.resolved }}</h2>
+    </div>
+
+</section>
+
+<section class="upload-section">
+    <h2>Quarantined Records</h2>
+    <p>Review the original record and its validation errors before correcting it.</p>
+
+    {% for record in records %}
+    <div class="quarantine-card">
+
+        <div class="quarantine-heading">
+            <div>
+                <h3>{{ record.record_key }}</h3>
+                <p>
+                    Source: {{ record.file_name }}
+                    | Row: {{ record.source_row_number }}
+                </p>
+            </div>
+
+            <span class="status-label {{ record.status|lower }}">
+                {{ record.status }}
+            </span>
+        </div>
+
+        <h4>Original Record</h4>
+
+        <div class="record-data">
+            {% for key, value in record.original.items() %}
+                <div>
+                    <strong>{{ key }}</strong>
+                    <span>{{ value }}</span>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h4>Validation Errors</h4>
+
+        <ul class="error-list">
+            {% for error in record.errors %}
+                <li>
+                    <strong>{{ error.code }}</strong>:
+                    {{ error.message }}
+                </li>
+            {% else %}
+                <li>No error details available.</li>
+            {% endfor %}
+        </ul>
+
+        {% if record.status in ['OPEN', 'CORRECTED'] %}
+
+        <details class="correction-panel">
+            <summary>
+                {% if record.status == 'CORRECTED' %}
+                    Edit Corrected Values
+                {% else %}
+                    Correct This Record
+                {% endif %}
+            </summary>
+
+            <form method="POST"
+                  action="{{ url_for('correct_quarantine_record',
+                                     quarantine_id=record.quarantine_id) }}">
+
+                <div class="correction-grid">
+
+                    <label>
+                        Employee ID
+                        <input type="text" name="employee_id"
+                               value="{{ record.corrected.employee_id }}"
+                               required>
+                    </label>
+
+                    <label>
+                        Employee Name
+                        <input type="text" name="employee_name"
+                               value="{{ record.corrected.employee_name }}"
+                               required>
+                    </label>
+
+                    <label>
+                        Department ID
+                        <select name="department_id" required>
+                            <option value="101"
+                                {% if record.corrected.department_id|string == '101' %}selected{% endif %}>
+                                101
+                            </option>
+                            <option value="102"
+                                {% if record.corrected.department_id|string == '102' %}selected{% endif %}>
+                                102
+                            </option>
+                            <option value="103"
+                                {% if record.corrected.department_id|string == '103' %}selected{% endif %}>
+                                103
+                            </option>
+                        </select>
+                    </label>
+
+                    <label>
+                        Salary
+                        <input type="number" name="salary"
+                               min="0.01" step="0.01"
+                               value="{{ record.corrected.salary }}"
+                               required>
+                    </label>
+
+                    <label>
+                        Age
+                        <input type="number" name="age"
+                               min="18" max="65"
+                               value="{{ record.corrected.age }}"
+                               required>
+                    </label>
+
+                    <label>
+                        Joining Date
+                        <input type="date" name="joining_date"
+                               value="{{ record.corrected.joining_date }}"
+                               required>
+                    </label>
+
+                </div>
+
+                <button type="submit">Save Corrections</button>
+            </form>
+        </details>
+
+        {% endif %}
+
+        {% if record.status == 'CORRECTED' %}
+        <form method="POST"
+              action="{{ url_for('replay_quarantine_record',
+                                 quarantine_id=record.quarantine_id) }}"
+              class="replay-form">
+
+            <button type="submit" class="replay-button">
+                Validate & Replay Record
+            </button>
+        </form>
+        {% endif %}
+
+    </div>
+
+    {% else %}
+
+    <p class="empty-state">No quarantined records found.</p>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}
